@@ -21,24 +21,18 @@
             <post-form class="popup__form" @createPost="createPost" />
         </MyPopup>
     </div>
-    <h3 style="color: rgb(41, 119, 84);">Пагинация</h3>
-    <div class="page__wrapper">
-        <button
-            v-for="pageNum in totalPage"
-            :key="pageNum"
-            class="page"
-            :class="page == pageNum ? 'active-page' : ''"
-            @click="changePage(pageNum)"
-        >
-            {{ pageNum }}
-        </button>
-    </div>
+    <!-- <PaginationTabs
+        :totalPage="totalPage"
+        :currentPage="page"
+        @changePage="changePage"
+    /> -->
     <post-list
         :posts="sortedAndSearchedPosts"
         @remove="removePost"
         v-if="!isPostsLoading"
     />
     <div v-else>Идет загрузка...</div>
+    <div ref="observer" class="observer"></div>
 </template>
 
 <script>
@@ -80,7 +74,6 @@ export default {
         },
         async fetchPosts() {
             try {
-                this.isPostsLoading = true;
                 const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
                     params: {
                         _page: this.page,
@@ -92,17 +85,42 @@ export default {
             } catch (err) {
                 // eslint-disable-next-line no-alert
                 alert(err);
-            } finally {
-                this.isPostsLoading = false;
             }
         },
-        changePage(pageNum) {
-            this.page = pageNum;
-            this.fetchPosts();
+        async loadMorePosts() {
+            try {
+                this.page += 1;
+                const response = await axios.get('https://jsonplaceholder.typicode.com/posts', {
+                    params: {
+                        _page: this.page,
+                        _limit: this.limit,
+                    },
+                });
+                this.totalPage = Math.ceil(response.headers['x-total-count'] / this.limit);
+                this.posts = [...this.posts, ...response.data];
+            } catch (err) {
+                // eslint-disable-next-line no-alert
+                alert(err);
+            }
         },
+        // changePage(pageNum) {
+        //     this.page = pageNum;
+        //     this.fetchPosts();
+        // },
     },
     mounted() {
         this.fetchPosts();
+        const options = {
+            rootMargin: '0px',
+            threshold: 1.0,
+        };
+        const callback = (entries) => {
+            if (entries[0].isIntersecting && this.page < this.totalPage) {
+                this.loadMorePosts();
+            }
+        };
+        const observer = new IntersectionObserver(callback, options);
+        observer.observe(this.$refs.observer);
     },
     computed: {
         sortedPosts() {
@@ -150,30 +168,7 @@ body {
   flex: 1 1 auto;
 }
 
-.page__wrapper {
-  display: flex;
-
-  & button:last-child {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-  }
-
-  & button:first-child {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-}
-
-.page {
-  border: 1px solid rgb(68, 193, 137);
-  color: rgb(58, 166, 118);
-  min-width: 30px;
-  min-height: 30px;
-  background: none;
-}
-
-.active-page {
-  color: white;
-  background: rgb(58, 166, 118);
+.observer {
+  height: 30px;
 }
 </style>

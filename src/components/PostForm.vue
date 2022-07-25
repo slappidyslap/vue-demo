@@ -55,4 +55,11 @@ export default {
   text-align: center;
   margin-bottom: 5px;
 }
+
+.inp.inp {
+  min-width: 100%;
+}
+.btn.btn {
+  min-width: 100%
+}
 </style>

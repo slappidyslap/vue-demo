@@ -17,7 +17,6 @@
                 class="post__create"
             >
                 Создать пост
-                {{ totalPage }}
             </MyButton>
             <MyPopup v-model:isShow="isShow">
                 <post-form class="popup__form" @createPost="createPost" />
@@ -151,11 +150,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
-.popup__form button {
-  min-width: 100%
-}
-
 .post__control {
   display: flex;
   column-gap: 5px;

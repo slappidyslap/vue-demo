@@ -10,7 +10,6 @@ export default {
 </script>
 <style scoped lang="scss">
 .btn {
-  margin-bottom: 5px;
   background: none;
   border: 1px solid rgb(68, 193, 137);
   color: rgb(41, 119, 84);

@@ -7,6 +7,8 @@
                 :key="post.id"
                 :post="post"
                 @remove="$emit('remove', post)"
+                @click="$router.push(`/posts/${post.id}`)"
+                style="cursor: pointer;"
             />
         </transition-group>
     </div>

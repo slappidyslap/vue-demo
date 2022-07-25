@@ -38,6 +38,13 @@ export default {
     border: 1px solid rgb(68, 193, 137);
     color:rgb(58, 166, 118);
     border-radius: 5px;
+    transition: 1000ms;
+    background-color: white;
+
+    &:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 5px rgb(41, 119, 84);;
+    }
   }
 
   &__title {

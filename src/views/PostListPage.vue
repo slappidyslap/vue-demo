@@ -17,6 +17,7 @@
                 class="post__create"
             >
                 Создать пост
+                {{ totalPage }}
             </MyButton>
             <MyPopup v-model:isShow="isShow">
                 <post-form class="popup__form" @createPost="createPost" />
@@ -28,7 +29,22 @@
             v-if="!isPostsLoading"
         />
         <div v-else>Идет загрузка...</div>
-        <div v-intersection ref="observer" class="observer"></div>
+        <!-- <div
+            v-intersection="
+                {
+                    fun: loadMorePosts,
+                    currentPage: page,
+                    totalPage,
+                }"
+            ref="observer"
+            class="observer"
+        >
+        </div> -->
+        <div
+            ref="observer"
+            class="observer"
+        >
+        </div>
     </div>
 </template>
 
@@ -93,7 +109,6 @@ export default {
                         _limit: this.limit,
                     },
                 });
-                this.totalPage = Math.ceil(response.headers['x-total-count'] / this.limit);
                 this.posts = [...this.posts, ...response.data];
             } catch (err) {
                 // eslint-disable-next-line no-alert
@@ -107,6 +122,19 @@ export default {
     },
     mounted() {
         this.fetchPosts();
+        console.log(this.$refs.observer);
+        const options = {
+            rootMargin: '0px',
+            threshold: 1.0,
+        };
+        const callback = (entries) => {
+            if (entries[0].isIntersecting && this.page < this.totalPage) {
+                this.loadMorePosts();
+                console.log('dfadsf');
+            }
+        };
+        const observer = new IntersectionObserver(callback, options);
+        observer.observe(this.$refs.observer);
     },
     computed: {
         sortedPosts() {

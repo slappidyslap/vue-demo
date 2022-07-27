@@ -17,6 +17,10 @@ const router = createRouter({
             path: '/posts/:id',
             component: () => import('@/views/PostPage.vue'),
         },
+        {
+            path: '/composition',
+            component: () => import('@/views/PostListPageCompositionApi.vue'),
+        },
     ],
 });
 
